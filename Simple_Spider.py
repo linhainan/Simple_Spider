@@ -38,13 +38,14 @@ class MyParser:
         self.begin = 0
         self.end = 0
         self.dep = 0
-        self.MyTool = HTML_Tool()
+        #self.MyTool = HTML_Tool()
     def Parser(self, data, stag, etag):
         epos = 0
         npos = epos
         totallen = 0
         elen = len(etag)
         dlen = len(data)
+        self.dep = 0
         while True:
             epos = data[totallen:].find(etag)
             print("len" +str(epos))
@@ -56,7 +57,7 @@ class MyParser:
             else:
                 count = data[totallen:epos+totallen].count(stag)
                 self.dep += count
-                
+                print(count)
                 self.dep -=1
                 epos += elen
                 totallen += epos
@@ -65,26 +66,32 @@ class MyParser:
                 if totallen >= dlen:
                     return -1
         return -1
-    def savefile(self, content):
-        with open("00001.html",'wb') as file:
-            file.write(content)
-        file.close()
+    def getElem(self, tag):
+        return tag.split(' ')[0]
     def feed(self, data, stag, etag):
         #data = self.MyTool.Replace_Char(str(data))
-        npos = data.find('<div class="news_list news_list02">')
-        print(data[npos:1000])
-        if npos < 0:
-            return -1
+        headtag = self.getElem(stag)
+        itemList = []
+        pseek = 0
+        while True:
+            npos = data[pseek:].find(stag)
+            #print(data[npos:1000])
+            if npos < 0:
+                return itemList
         
-        nlen = self.Parser(str(data[npos:]), stag, etag)
-        #print(data)
-        #print(data[npos:])
-        if nlen >= 0:
-            #print(len(data[npos:nlen+npos]))
-            self.savefile(bytes(data[npos:npos+nlen], "UTF-8"))
-        else:
-            #print(data[npos:])
-            self.savefile(bytes(data[npos:], "UTF-8"))
+            nlen = self.Parser(str(data[pseek+npos:]), headtag, etag)
+                #print(data)
+                #print(data[npos:])
+            if nlen >= 0:
+                #print(len(data[npos:nlen+npos]))
+                #self.savefile(bytes(data[npos:npos+nlen], "UTF-8"))
+                itemList.append(data[pseek+npos:pseek+npos+nlen])
+                pseek += npos+nlen
+            else:
+                #print(data[npos:])
+                #self.savefile(bytes(data[npos:], "UTF-8"))
+                #itemList.append(data[pseek+npos:])
+                return itemList
         
             
 
@@ -108,7 +115,10 @@ class Simple_Spider:
         #    self.savefile(bytes(item, 'UTF-8'))
         #self.savefile(bytes(self.eflag, 'UTF-8'))
         mypaser = MyParser()
-        mypaser.feed(str(page), "<div", "</div>")
+        return mypaser.feed(str(page), '<div class="news_list news_list02">', "</div>")
+    def GetLink(self, page):
+        mypaser = MyParser()
+        return mypaser.feed(str(page), "<link", "/>")
     def GetPage(self, url):
         user_agent = 'Mozilla/4.0 (compatible; MSIE 5.5; Windows NT)' 
         headers = { 'User-Agent' : user_agent }
@@ -119,8 +129,21 @@ class Simple_Spider:
 
     def Start(self):
         page = self.GetPage(self.url)
-        self.GetDiv(page)
+        
+        divList = self.GetDiv(page)
+        linkList = self.GetLink(page)
+        with open('index1.html', 'wb') as outfile:
+            outfile.write(b'<head>')
+            outfile.write(b'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">')
+            for link in linkList:
+                outfile.write(bytes(link, "UTF-8"))
+            outfile.write(b'</head>')
+            for div in divList:
+                outfile.write(bytes(div, "UTF-8"))
+        outfile.close()
         cmd = input()
 
+#tag = '<div class="news_list news_list02">'
+#print (tag.split(' ')[0])
 mySpider = Simple_Spider("http://xw.jx3.xoyo.com/news/", "jx3.html", '<div class="news_list news_list02">', u'</div>')
 mySpider.Start()
