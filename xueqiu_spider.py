@@ -22,7 +22,7 @@ class XQ_Spider:
             xml_content = json.loads(content)
             urlList = []
             for status in xml_content["statuses"]:
-                print(status['target'])
+                #print(status['target'])
                 urlList.append(str(status['target']))
             return urlList
     def Get_Ctx(self, userid):
@@ -32,7 +32,7 @@ class XQ_Spider:
             xqfile.write(b'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">')
             xqfile.write(b'</head>')
             for url in urlList:
-                print(url)
+                #print(url)
                 if url == None:
                     continue
                 mypage = self.myclient.GetPage("http://xueqiu.com" + url)
