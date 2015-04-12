@@ -1,0 +1,7 @@
+# my git ignore
+*.html
+*.htm
+*.txt
+*~
+*.bak
+*.pyc
