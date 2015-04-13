@@ -7,4 +7,8 @@
 *.pyc
 *.doc
 *.docx
-*.html
+*.png
+*.jpg
+*.jpeg
+.*
+.gitignore
