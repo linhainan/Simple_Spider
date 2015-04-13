@@ -15,7 +15,7 @@ class XQ_Spider:
         pg = 1
         maxpg = 1000
         urlList = []
-        retweetList = []
+        #retweetList = []
         while True:
             mypage = self.myclient.GetPage("http://xueqiu.com/" + userid +'?page=' + str(pg))#"2821861040")
             xq_spider = XQ_Spider()
@@ -30,15 +30,17 @@ class XQ_Spider:
                 maxpg = xml_content["maxPage"]
                 for status in xml_content["statuses"]:
                     retweeded_status = status['retweet_status_id']
-                    flag = True
-                    for retweed in retweetList:
-                        if retweed == str(retweeded_status):
-                            flag = False
-                    if flag == True:
-                        print(str(status['target']))
+                    if retweeded_status == 0:
                         urlList.append(str(status['target']))
-                        if retweeded_status != 0:
-                            retweetList.append(str(retweeded_status))
+                    #flag = True
+                    #for retweed in retweetList:
+                    #    if retweed == str(retweeded_status):
+                    #        flag = False
+                    #if flag == True:
+                    #    print(str(status['target']))
+                    #    urlList.append(str(status['target']))
+                    #    if retweeded_status != 0:
+                    #        retweetList.append(str(retweeded_status))
             pg += 1
             if pg > maxpg:
                 break
@@ -63,7 +65,6 @@ class XQ_Spider:
         h2d = HTML2Doc()
         h2d.open('xq_' + userid + '.doc')
         for url in urlList:
-            print(url)
             if url == None:
                 continue
             mypage = self.myclient.GetPage("http://xueqiu.com" + url)

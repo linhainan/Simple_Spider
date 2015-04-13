@@ -10,4 +10,3 @@ class HTML2Doc:
         def write(self, instream):
             xq_parser = XQHTMLParser(self.docfile)
             xq_parser.complete(instream)
-            print('Transcation complete!')
