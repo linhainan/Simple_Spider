@@ -1,5 +1,6 @@
 from tools.Simple_Parser import Simple_Parser
 from tools.Simple_WebCatcher import HTMLClient
+from tools.HTML2Doc import HTML2Doc
 import json
 class XQ_Spider:
     def __init__(self):
@@ -21,18 +22,25 @@ class XQ_Spider:
             content = item[s:e+1]
             xml_content = json.loads(content)
             urlList = []
+            retweetList = []
             for status in xml_content["statuses"]:
-                #print(status['target'])
-                urlList.append(str(status['target']))
+                retweeded_status = status['retweet_status_id']
+                flag = True
+                for retweed in retweetList:
+                    if retweed == str(retweeded_status):
+                        flag = False
+                if flag == True:
+                    urlList.append(str(status['target']))
+                    retweetList.append(str(retweeded_status))
             return urlList
-    def Get_Ctx(self, userid):
+    def Get_HTML(self, userid):
         urlList = self.Get_Url(userid)
         with open("xq_article_"+ userid +".txt", 'wb') as xqfile:
             xqfile.write(b'<head>')
             xqfile.write(b'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">')
             xqfile.write(b'</head>')
             for url in urlList:
-                #print(url)
+                print(url)
                 if url == None:
                     continue
                 mypage = self.myclient.GetPage("http://xueqiu.com" + url)
@@ -40,10 +48,24 @@ class XQ_Spider:
                 for ctx in div_ctx:
                     xqfile.write(bytes(ctx, 'utf-8'))
             xqfile.close()
+    def Get_Doc(self, userid):
+        urlList = self.Get_Url(userid)
+        h2d = HTML2Doc()
+        h2d.open('xq_' + userid + '.doc')
+        for url in urlList:
+            print(url)
+            if url == None:
+                continue
+            mypage = self.myclient.GetPage("http://xueqiu.com" + url)
+            div_ctx = self.Get_Div(mypage)
+            for ctx in div_ctx:
+               h2d.write(ctx) 
 
 if __name__ == '__main__':
     xq_spider = XQ_Spider()
-    xq_spider.Get_Ctx("2821861040")
+    xq_spider.Get_HTML("2821861040")
+    xq_spider.Get_Doc("2821861040")
+
 
 
 #if __name__ == '__main__':

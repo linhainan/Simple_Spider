@@ -5,3 +5,6 @@
 *~
 *.bak
 *.pyc
+*.doc
+*.docx
+*.html
