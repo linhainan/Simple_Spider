@@ -18,6 +18,8 @@ class XQ_Spider:
         #retweetList = []
         while True:
             mypage = self.myclient.GetPage("http://xueqiu.com/" + userid +'?page=' + str(pg))#"2821861040")
+            if mypage == None:
+                continue
             xq_spider = XQ_Spider()
             xq_json = xq_spider.Get_Json(mypage)
             #infile = input('>')
@@ -56,6 +58,8 @@ class XQ_Spider:
                 if url == None:
                     continue
                 mypage = self.myclient.GetPage("http://xueqiu.com" + url)
+                if mypage == None:
+                    continue
                 div_ctx = self.Get_Div(mypage)
                 for ctx in div_ctx:
                     xqfile.write(bytes(ctx, 'utf-8'))
@@ -75,8 +79,8 @@ class XQ_Spider:
 if __name__ == '__main__':
     xq_spider = XQ_Spider()
     #xq_spider.Get_HTML("2821861040")
-    xq_spider.Get_Doc("2821861040")
-
+    #xq_spider.Get_Doc("2821861040")
+    xq_spider.Get_Doc('9646041154')
 
 #if __name__ == '__main__':
 #    #myclient = HTMLClient()

@@ -52,20 +52,23 @@ class XQHTMLParser(HTMLParser):
         self.isdes = False
         if re.match(r'h(\d)', tag):
             self.title = True 
-            print(tag)
         if tag == "img":
             if len(attrs) == 0: pass
             else:
                 for (variable, value)  in attrs:
                     if variable == "src":
                         picdata = self.myclient.GetPic(value.split('!')[0])
-                        pictmp = value.split('/')[-1].split('!')[0]
-                        if pictmp.find('jpg') < 0:
-                            with open(pictmp, 'wb') as pic:
-                                pic.write(bytes(picdata))
-                                pic.close()
-                            self.doc.add_picture(pictmp, width=Inches(2.25))
-                            self.picList.append(pictmp)
+                        if picdata == None:
+                            pass
+                        else:
+                            pictmp = value.split('/')[-1].split('!')[0]
+                            if pictmp.find('png') >= 0:
+                                with open(pictmp, 'wb') as pic:
+                                    pic.write(bytes(picdata))
+                                    pic.close()
+                                if os.path.getsize(pictmp) < 20000:
+                                    self.doc.add_picture(pictmp, width=Inches(2.25))
+                                self.picList.append(pictmp)
         if tag == 'script':
             self.isdes = True
     def handle_data(self, data):
