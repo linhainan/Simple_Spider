@@ -1,5 +1,6 @@
 from html.parser import HTMLParser
 from docx import Document
+import docx
 from docx.shared import Inches
 from tools.Simple_WebCatcher import HTMLClient
 import os
@@ -36,6 +37,7 @@ class MyHTMLParser(HTMLParser):
 #html = 'c:/html/kkk/start'
 #print(html.split(r'/')[-1])
 
+errorimg = '14c642b1f9ffac3fc406107e.png'
 class XQHTMLParser(HTMLParser):
     def __init__(self, docfile):
         HTMLParser.__init__(self)
@@ -66,8 +68,11 @@ class XQHTMLParser(HTMLParser):
                                 with open(pictmp, 'wb') as pic:
                                     pic.write(bytes(picdata))
                                     pic.close()
-                                if os.path.getsize(pictmp) < 20000:
+                                #if os.path.getsize(pictmp) < 90000:
+                                try:
                                     self.doc.add_picture(pictmp, width=Inches(2.25))
+                                except docx.image.exceptions.UnexpectedEndOfFileError as e:
+                                    print(e)
                                 self.picList.append(pictmp)
         if tag == 'script':
             self.isdes = True

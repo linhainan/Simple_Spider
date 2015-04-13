@@ -71,10 +71,12 @@ class XQ_Spider:
         for url in urlList:
             if url == None:
                 continue
+            print("download from" + url)
             mypage = self.myclient.GetPage("http://xueqiu.com" + url)
             div_ctx = self.Get_Div(mypage)
             for ctx in div_ctx:
                h2d.write(ctx) 
+            print("Done!")
 
 if __name__ == '__main__':
     xq_spider = XQ_Spider()
