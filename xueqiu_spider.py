@@ -12,27 +12,37 @@ class XQ_Spider:
        myparser = Simple_Parser()
        return myparser.feed(str(page), '<div class="status-content">', "</div>") 
     def Get_Url(self, userid):
-        mypage = self.myclient.GetPage("http://xueqiu.com/" + userid)#"2821861040")
-        xq_spider = XQ_Spider()
-        xq_json = xq_spider.Get_Json(mypage)
-        #infile = input('>')
-        for item in xq_json:
-            s = item.find('{')
-            e = item.rfind('}')
-            content = item[s:e+1]
-            xml_content = json.loads(content)
-            urlList = []
-            retweetList = []
-            for status in xml_content["statuses"]:
-                retweeded_status = status['retweet_status_id']
-                flag = True
-                for retweed in retweetList:
-                    if retweed == str(retweeded_status):
-                        flag = False
-                if flag == True:
-                    urlList.append(str(status['target']))
-                    retweetList.append(str(retweeded_status))
-            return urlList
+        pg = 1
+        maxpg = 1000
+        urlList = []
+        retweetList = []
+        while True:
+            mypage = self.myclient.GetPage("http://xueqiu.com/" + userid +'?page=' + str(pg))#"2821861040")
+            xq_spider = XQ_Spider()
+            xq_json = xq_spider.Get_Json(mypage)
+            #infile = input('>')
+            
+            for item in xq_json:
+                s = item.find('{')
+                e = item.rfind('}')
+                content = item[s:e+1]
+                xml_content = json.loads(content)
+                maxpg = xml_content["maxPage"]
+                for status in xml_content["statuses"]:
+                    retweeded_status = status['retweet_status_id']
+                    flag = True
+                    for retweed in retweetList:
+                        if retweed == str(retweeded_status):
+                            flag = False
+                    if flag == True:
+                        print(str(status['target']))
+                        urlList.append(str(status['target']))
+                        if retweeded_status != 0:
+                            retweetList.append(str(retweeded_status))
+            pg += 1
+            if pg > maxpg:
+                break
+        return urlList
     def Get_HTML(self, userid):
         urlList = self.Get_Url(userid)
         with open("xq_article_"+ userid +".txt", 'wb') as xqfile:
@@ -40,7 +50,7 @@ class XQ_Spider:
             xqfile.write(b'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">')
             xqfile.write(b'</head>')
             for url in urlList:
-                print(url)
+                #print(url)
                 if url == None:
                     continue
                 mypage = self.myclient.GetPage("http://xueqiu.com" + url)
@@ -63,9 +73,8 @@ class XQ_Spider:
 
 if __name__ == '__main__':
     xq_spider = XQ_Spider()
-    xq_spider.Get_HTML("2821861040")
+    #xq_spider.Get_HTML("2821861040")
     xq_spider.Get_Doc("2821861040")
-
 
 
 #if __name__ == '__main__':
