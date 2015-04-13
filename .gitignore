@@ -5,3 +5,10 @@
 *~
 *.bak
 *.pyc
+*.doc
+*.docx
+*.png
+*.jpg
+*.jpeg
+.*
+.gitignore
