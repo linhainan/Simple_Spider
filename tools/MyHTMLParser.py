@@ -65,32 +65,33 @@ class XQHTMLParser(HTMLParser):
                         else:
                             pictmp = value.split('/')[-1].split('!')[0]
                             picfix = value.split('/')[-1].split('!')[-1]
-                            if pictmp.find('png') >= 0:
-                                with open(pictmp, 'wb') as pic:
-                                    pic.write(bytes(picdata))
-                                    pic.close()
-                                #if os.path.getsize(pictmp) < 90000:
-                                try:
-                                    if picfix[0:1] == 'c':
-                                        self.doc.add_picture(pictmp, width=Inches(4.5))
-                                    else:
-                                        self.doc.add_picture(pictmp)#, width=Inches(2.25))
-                                except docx.image.exceptions.UnexpectedEndOfFileError as e:
-                                    print(e)
-                                self.picList.append(pictmp)
+                            with open(pictmp, 'wb') as pic:
+                                pic.write(bytes(picdata))
+                                pic.close()
+                            #if os.path.getsize(pictmp) < 90000:
+                            try:
+                                if picfix[0:1] == 'c':
+                                    self.doc.add_picture(pictmp, width=Inches(4.5))
+                                else:
+                                    self.doc.add_picture(pictmp)#, width=Inches(2.25))
+                            except docx.image.exceptions.UnexpectedEndOfFileError as e:
+                                print(e)
+                            self.picList.append(pictmp)
         if tag == 'script':
             self.isdes = True
     def handle_data(self, data):
         if self.title == True:
-            self.doc.add_paragraph(self.text)
+            if self.text != '':
+                self.doc.add_paragraph(self.text)
             self.text = ''
             self.doc.add_heading(data, level=2)
         if self.isdes == False:
             self.text += data
     def handle_endtag(self, tag):
         #if tag == 'br' or tag == 'p' or tag == 'div':
-        self.doc.add_paragraph(self.text)
-        self.text = ''
+        if self.text != '':
+            self.doc.add_paragraph(self.text)
+            self.text = ''
     def complete(self, html):
         self.feed(html)
         self.doc.save(self.docfile)

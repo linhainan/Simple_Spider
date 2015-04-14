@@ -49,7 +49,7 @@ class XQ_Spider:
         return urlList
     def Get_HTML(self, userid):
         urlList = self.Get_Url(userid)
-        with open("xq_article_"+ userid +".txt", 'wb') as xqfile:
+        with open("xq_article_"+ userid +".html", 'wb') as xqfile:
             xqfile.write(b'<head>')
             xqfile.write(b'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">')
             xqfile.write(b'</head>')
@@ -82,8 +82,9 @@ if __name__ == '__main__':
     xq_spider = XQ_Spider()
     #xq_spider.Get_HTML("2821861040")
     #xq_spider.Get_Doc("2821861040")
-    xq_spider.Get_Doc('9646041154')
-
+    #xq_spider.Get_Doc('9646041154')
+    #xq_spider.Get_HTML("9646041154")
+    xq_spider.Get_Doc('2733321298')
 #if __name__ == '__main__':
 #    #myclient = HTMLClient()
 #    #mypage = myclient.GetPage("http://xueqiu.com/2821861040")
