@@ -64,13 +64,17 @@ class XQHTMLParser(HTMLParser):
                             pass
                         else:
                             pictmp = value.split('/')[-1].split('!')[0]
+                            picfix = value.split('/')[-1].split('!')[-1]
                             if pictmp.find('png') >= 0:
                                 with open(pictmp, 'wb') as pic:
                                     pic.write(bytes(picdata))
                                     pic.close()
                                 #if os.path.getsize(pictmp) < 90000:
                                 try:
-                                    self.doc.add_picture(pictmp, width=Inches(2.25))
+                                    if picfix[0:1] == 'c':
+                                        self.doc.add_picture(pictmp, width=Inches(4.5))
+                                    else:
+                                        self.doc.add_picture(pictmp)#, width=Inches(2.25))
                                 except docx.image.exceptions.UnexpectedEndOfFileError as e:
                                     print(e)
                                 self.picList.append(pictmp)
